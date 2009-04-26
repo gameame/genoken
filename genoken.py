@@ -2,29 +2,24 @@ import random
 import settings
 
 class Individual(object):
-	pass
-
-class AlphabeticIndividual(Individual):
-	def __init__(self, sequence = None):
-		if sequence != None:
-			self.sequence = sequence
-		else:
-			self.sequence = ''
-			length = random.randint(1, settings.MAX_ALPHABETIC_INDIVIDUAL_INIT_LENGTH)
-			for i in range(length):
-				self.sequence += random.choose(settings.ALPHABET)
-		self.played = 0
-		self.won = 0
-	
+	def __init__(self, sequence = None, fitness = None):
+		# Controllare che sequence sia di tipo encoding
+		self.sequence = sequence if sequence != None else settings.ENCODING_TYPE()
+		self.fitness = fitness if fitness != None else settings.FITNESS_TYPE()
 
 	def get_fitness(self):
-		if self.played == 0:
-			return 0
-		return (sel.won / self.played)+1
+		return float(self.fitness)
 
-	
+	def recombine(self, other):
+		offspring_sequence = self.sequence.recombine(other.sequence)
+		return map(lambda x: Individual(sequence = x), offspring_sequence)
+
+	def mutate(self):
+		self.sequence.mutate()
+		pass
+
 	def __str__(self):
-		return '"%s"' % self.sequence
+		return str(self.sequence)
 
 	def __len__(self):
 		"""
@@ -32,16 +27,19 @@ class AlphabeticIndividual(Individual):
 		"""
 		return len(self.sequence)
 
-
+	def __cmp__(self, other):
+		if other == None:
+			return 1
+		return cmp(self.get_fitness(), other.get_fitness())
 
 class Population(object):
 	"""
 	Genetic algorithm population management
 	"""
-	def __init__(self, size = settings.POPULATION_SIZE, individual_type=settings.INDIVIDUAL_TYPE):
+	def __init__(self, size = settings.POPULATION_SIZE):
 		self.pool = []
 		for i in range(size):
-			self.pool.append(individual_type())
+			self.pool.append(Individual())
 
 	def choose_random_individual(self, by_fitness = False):
 		if by_fitness:
@@ -56,53 +54,20 @@ class Population(object):
 			i2 = self.choose_random_individual(by_fitness = by_fitness)
 			if i1 not is i2: break
 		return (i1, i2)
+	
+	def total_fitness(self):
+		"""
+		It sums the fitness of each individual
+		"""
+		return reduce(lambda x, y: x + y, self.pool)
+	
+	def sort(self):
+		self.pool.sort()
 
 	def prune(self):
 		# TODO Questo metodo dovrebbe essere esguito dopo ogni match
 		# e potrebbe riordinare la popolazione in base alla fitness
 		# o eliminare gli individui meno adatti.
-		pass
-
-class Mutation(object):
-	pass
-
-class AlphabeticMutation(Mutation):
-	def mutate_single_char(self):
-		"""
-		substitute a single position with a random char
-		"""
-		pass
-	
-	def mutate_chars_with_probability(self, prob):
-		"""
-		sustitute each position with a random char with probability "prob"
-		"""
-		pass
-
-	def mutate_invert(self):
-		"""
-		invert the string
-		"""
-		pass
-
-	def mutate_switch(self):
-		"""
-		pick a random position x and returns sequence[:x] + sequence[x:]
-		"""
-		pass
-
-	def mutate_skip(self):
-		"""
-		remove a random substring from the string
-		"""
-		pass
-
-
-class Crossover(object):
-	pass
-
-class AlphabeticCrossover(Crossover):
-	def reproduce(self, father, mother):
 		pass
 
 class Evolve(object):
@@ -113,7 +78,11 @@ class Evolve(object):
 		"""
 		pick 2 random individuals, vote them (either via user choice via console, goggole search result, etc), and update the fitness
 		"""
-		return settings.MATCH_FUNCTION()
+		couple = self.population.choose_random_couple()
+		winner, loser = settings.MATCH_FUNCTION(couple)
+		winner.fitness.win(over = loser.fitness)
+		loser.fitness.lose(by = winner.fitness)
+		return
 
 	def cycle(self):
 		"""
@@ -121,14 +90,14 @@ class Evolve(object):
 		(how to choose between "reproduction" and match? every given number of cycle? with some probability?)
 		apply mutation (with some probability) to newborns
 		"""
+		# Ho adottato l'opzione probabilita'
 		while True:
-			couple = self.population.choose_random_couple()
 			try:
-				winner = self.match(couple)
+				self.match()
 			except InterruptException: # Definire un'eccezione che interrompe la simulazione
 				break
 			if chance(settings.REPRODUCTION_RATE):
-				offspring = settings.RECOMBINE_FUNCTION(self.population.choose_random_couple(by_fitness = True))
+				offspring = Individual.recombine(self.population.choose_random_couple(by_fitness = True))
 				for individual in offspring:
 					if chance(settings.MUTATION_PROBABILITY):
 						individual.mutate()
