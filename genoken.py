@@ -13,7 +13,7 @@ class Individual(object):
 	pass
 
 class AlphabeticIndividual(Individual):
-	__init__(self, max_length=10):
+	def __init__(self, max_length=10):
 		self.sequence=''
 		alphabet_length=len(ALPHABET)
 		length=random.randint(0, max_length)
@@ -22,7 +22,7 @@ class AlphabeticIndividual(Individual):
 		self.played = 0
 		self.won = 0
 
-	__init__(self, sequence):
+	def __init__(self, sequence):
 		self.sequence = sequence
 		self.played = 0
 		self.won = 0
@@ -56,7 +56,7 @@ class Population(object):
 			
 
 	def choose_random_individual(self):
-		return pool[random.randint(0, len(pool)]
+		return random.choose(self.pool)
 
 	def choose_linear_probability_fitness_individual(self):
 		"""
@@ -111,7 +111,7 @@ class AlphabeticCrossover(Crossover):
 		pass
 
 class Evolve(object):
-	__init__(self):
+	def __init__(self):
 		self.population = Population(config.POPULATION_SIZE, config.INDIVIDUAL_TYPE)
 
 	def match(self):
