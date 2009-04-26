@@ -1,29 +1,18 @@
-class config(object):
-	"""
-	various configuration parameters
-	"""
-	ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
-	MUTATION_PROBABILITY = 0.01
-	REPRODUCTION_RATE = 0.2
-	POPULATION_SIZE = 1000
-	INDIVIDUAL_TYPE = "AlphabeticIndividual"
-
+import random
+import settings
 
 class Individual(object):
 	pass
 
 class AlphabeticIndividual(Individual):
-	def __init__(self, max_length=10):
-		self.sequence=''
-		alphabet_length=len(ALPHABET)
-		length=random.randint(0, max_length)
-		for i in range(length):
-			self.sequence+=ALPHABET[random.randint(0, alphabet_length)]
-		self.played = 0
-		self.won = 0
-
-	def __init__(self, sequence):
-		self.sequence = sequence
+	def __init__(self, sequence = None):
+		if sequence != None:
+			self.sequence = sequence
+		else:
+			self.sequence = ''
+			length = random.randint(1, settings.MAX_ALPHABETIC_INDIVIDUAL_INIT_LENGTH)
+			for i in range(length):
+				self.sequence += random.choose(settings.ALPHABET)
 		self.played = 0
 		self.won = 0
 	
@@ -49,24 +38,30 @@ class Population(object):
 	"""
 	Genetic algorithm population management
 	"""
-	pool = []
-	def init_population(self, size, individual_type=AlphabeticIndividual):
+	def __init__(self, size = settings.POPULATION_SIZE, individual_type=settings.INDIVIDUAL_TYPE):
+		self.pool = []
 		for i in range(size):
 			self.pool.append(individual_type())
-			
 
-	def choose_random_individual(self):
-		return random.choose(self.pool)
+	def choose_random_individual(self, by_fitness = False):
+		if by_fitness:
+			# TODO usare una funzione esterna per scegliere
+			pass
+		else
+			return random.choose(self.pool)
 
-	def choose_linear_probability_fitness_individual(self):
-		"""
-		return an individual according to fitness
-		--problem: how to deal with fitness=0? ...beware how fitness is evaluated!
-		"""
+	def choose_random_couple(self, by_fitness = False):
+		i1 = self.choose_random_individual(by_fitness = by_fitness)
+		while True:
+			i2 = self.choose_random_individual(by_fitness = by_fitness)
+			if i1 not is i2: break
+		return (i1, i2)
+
+	def prune(self):
+		# TODO Questo metodo dovrebbe essere esguito dopo ogni match
+		# e potrebbe riordinare la popolazione in base alla fitness
+		# o eliminare gli individui meno adatti.
 		pass
-
-
-
 
 class Mutation(object):
 	pass
@@ -112,13 +107,13 @@ class AlphabeticCrossover(Crossover):
 
 class Evolve(object):
 	def __init__(self):
-		self.population = Population(config.POPULATION_SIZE, config.INDIVIDUAL_TYPE)
+		self.population = Population()
 
 	def match(self):
 		"""
 		pick 2 random individuals, vote them (either via user choice via console, goggole search result, etc), and update the fitness
 		"""
-		pass
+		return settings.MATCH_FUNCTION()
 
 	def cycle(self):
 		"""
@@ -126,4 +121,23 @@ class Evolve(object):
 		(how to choose between "reproduction" and match? every given number of cycle? with some probability?)
 		apply mutation (with some probability) to newborns
 		"""
-		pass
+		while True:
+			couple = self.population.choose_random_couple()
+			try:
+				winner = self.match(couple)
+			except InterruptException: # Definire un'eccezione che interrompe la simulazione
+				break
+			if chance(settings.REPRODUCTION_RATE):
+				offspring = settings.RECOMBINE_FUNCTION(self.population.choose_random_couple(by_fitness = True))
+				for individual in offspring:
+					if chance(settings.MUTATION_PROBABILITY):
+						individual.mutate()
+					self.population.append(individual)
+			self.population.prune()
+
+# Funzione ausiliarie
+def chance(probability = 0.5):
+	"""
+	Returns true probability*100 times out of 100 calls
+	"""
+	return random.random() < probability
