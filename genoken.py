@@ -45,9 +45,9 @@ class Population(object):
 	def choose_random_individual(self, by_fitness = False):
 		if by_fitness:
 			# TODO usare una funzione esterna per scegliere
-			pass
+			raise NotImplementedError
 		else:
-			return random.choose(self.pool)
+			return random.choice(self.pool)
 
 	def choose_random_couple(self, by_fitness = False):
 		i1 = self.choose_random_individual(by_fitness = by_fitness)
@@ -95,7 +95,7 @@ class Evolve(object):
 		while True:
 			try:
 				self.match()
-			except InterruptException: # Definire un'eccezione che interrompe la simulazione
+			except StopEvolving:
 				break
 			if chance(settings.REPRODUCTION_RATE):
 				offspring = Individual.recombine(self.population.choose_random_couple(by_fitness = True))
@@ -104,3 +104,6 @@ class Evolve(object):
 						individual.mutate()
 					self.population.append(individual)
 			self.population.prune()
+
+class StopEvolving(Exception):
+	pass

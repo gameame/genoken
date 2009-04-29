@@ -5,7 +5,7 @@ REPRODUCTION_RATE = 0.2
 POPULATION_SIZE = 1000
 ENCODING_TYPE = library.AlphabeticEncoding
 FITNESS_TYPE = library.WonPlayedFitness
-
+MATCH_FUNCTION = library.console_match
 
 # Alphabetic settings
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "

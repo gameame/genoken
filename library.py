@@ -1,5 +1,6 @@
 import settings
 import random
+import genoken
 
 class Encoding():
 	"""
@@ -7,20 +8,20 @@ class Encoding():
 	Subclasses implement actual mutate and recombine method
 	"""
 	def mutate(self):
-		raise NotImplemented # TODO verificare il nome di questa eccezione
+		raise NotImplementedError
 
 	def recombine(self, other):
-		raise NotImplemented # TODO verificare il nome di questa eccezione
+		raise NotImplementedError
 
 	def __str__(self):
-		raise NotImplemented # TODO verificare il nome di questa eccezione
+		raise NotImplementedError
 	
 	def __len__(self):
-		raise NotImplemented # TODO verificare il nome di questa eccezione
+		raise NotImplementedError
 
 class Fitness():
 	def __float__(self):
-		raise NotImplemented # TODO verificare il nome di questa eccezione
+		raise NotImplementedError
 	
 	def __add__(self, other):
 		"""
@@ -35,10 +36,10 @@ class Fitness():
 		return float(self) + float(other)
 	
 	def win(self, over = None):
-		raise NotImplemented # TODO verificare il nome di questa eccezione
+		raise NotImplementedError
 
 	def lose(self, by = None):
-		raise NotImplemented # TODO verificare il nome di questa eccezione
+		raise NotImplementedError
 
 
 class AlphabeticEncoding(Encoding):
@@ -113,9 +114,39 @@ class WonPlayedFitness(Fitness):
 	def __float__(self):
 		return (self.won / self.played) + 1 if self.played != 0 else 0
 
+	def win(self, over = None):
+		self.won += 1
+		self.played += 1
+
+	def lose(self, by = None):
+		self.played += 1
+
 # Funzione ausiliarie
 def chance(probability = 0.5):
 	"""
 	Returns true probability*100 times out of 100 calls
 	"""
 	return random.random() < probability
+
+# Match functions
+def console_match(couple):
+	#from genoken import StopEvolving
+	print "Which is more meaningful? (add '+' for a stronger vote)"
+	print "1) %s" % couple[0]
+	print "2) %s" % couple[1]
+	print "3) end"
+	input = raw_input()
+	try:
+		vote = input[0]
+		try:
+			strong = (input[1] == '+')
+		except IndexError:
+			strong = False
+		if vote == "1":
+			return (couple[0], couple[1])
+		elif vote == "2":
+			return (couple[1], couple[0])
+		elif vote == "3":
+			raise genoken.StopEvolving
+	except IndexError:
+		pass
