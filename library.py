@@ -57,39 +57,52 @@ class AlphabeticEncoding(Encoding):
 		return len(self.sequence)
 
 	# metodi di mutazione
-    def mutate_single_char(self):
+    def mutate_single_char(self, char = None):
 		"""
-		substitute a single position with a random char
+		substitute a single position with char
+		if char is submitted a random char is chosen
 		"""
-		pass
+		i = random.randrange(len(self.sequence))
+		if char == None: char = random.choice(settings.ALPHABET)
+		self.sequence = self.sequence[:i] + char + self.sequence[i+1:]
 
 	def mutate_chars_with_probability(self, prob):
 		"""
 		sustitute each position with a random char with probability "prob"
 		"""
-		pass
+		new_sequence = ""
+		for char in self.sequence:
+			if chance(probe):
+				new_sequence += random.choice(settings.ALPHABET)
+			else
+				new_sequence += char
+		self.sequence = new_sequence
 
 	def mutate_invert(self):
 		"""
 		invert the string
 		"""
-		pass
+		self.sequence = reduce(lambda x,y: y + x, self.sequence)
 
 	def mutate_switch(self):
 		"""
-		pick a random position x and returns sequence[:x] + sequence[x:]
+		pick a random position x and returns sequence[x:] + sequence[:x]
 		"""
-		pass
+		i = random.randrange(len(self.sequence))
+		self.sequence = self.sequence[i:] + self.sequence[:i]
 
 	def mutate_skip(self):
 		"""
 		remove a random substring from the string
 		"""
-		pass
+		self.mutate_single_char(char = "")
 
 	# metodi di ricombinazione
 	def single_point_crossover(self, other):
-		pass
+		i = random.randrange(len(self.sequence))
+		j = random.randrange(len(other.sequence))
+		return (Encoding(self.sequence[:i] + other.sequence[j:]),
+				Encoding(other.sequence[:j] + self.sequence[i:]))
 
 class WonPlayedFitness(Fitness):
 	def __init__(self):
@@ -98,3 +111,10 @@ class WonPlayedFitness(Fitness):
 	
 	def __float__(self):
 		return (self.won / self.played) + 1 if self.played != 0 else 0
+
+# Funzione ausiliarie
+def chance(probability = 0.5):
+	"""
+	Returns true probability*100 times out of 100 calls
+	"""
+	return random.random() < probability

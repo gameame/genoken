@@ -1,5 +1,6 @@
 import random
 import settings
+from library import chance
 
 class Individual(object):
 	def __init__(self, sequence = None, fitness = None):
@@ -103,10 +104,3 @@ class Evolve(object):
 						individual.mutate()
 					self.population.append(individual)
 			self.population.prune()
-
-# Funzione ausiliarie
-def chance(probability = 0.5):
-	"""
-	Returns true probability*100 times out of 100 calls
-	"""
-	return random.random() < probability
