@@ -69,6 +69,7 @@ class Population(object):
 		# TODO Questo metodo dovrebbe essere esguito dopo ogni match
 		# e potrebbe riordinare la popolazione in base alla fitness
 		# o eliminare gli individui meno adatti.
+		raise NotImplementedError
 		pass
 
 class Evolve(object):
