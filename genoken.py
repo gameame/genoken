@@ -46,14 +46,14 @@ class Population(object):
 		if by_fitness:
 			# TODO usare una funzione esterna per scegliere
 			pass
-		else
+		else:
 			return random.choose(self.pool)
 
 	def choose_random_couple(self, by_fitness = False):
 		i1 = self.choose_random_individual(by_fitness = by_fitness)
 		while True:
 			i2 = self.choose_random_individual(by_fitness = by_fitness)
-			if i1 not is i2: break
+			if i1 is not i2: break
 		return (i1, i2)
 	
 	def total_fitness(self):

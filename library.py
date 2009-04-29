@@ -1,4 +1,5 @@
 import settings
+import random
 
 class Encoding():
 	"""
@@ -42,13 +43,13 @@ class Fitness():
 
 class AlphabeticEncoding(Encoding):
 	def __init__(self, sequence = None):
-        if sequence != None:
+		if sequence != None:
 			self.sequence = sequence
 		else:
 			self.sequence = ''
 			length = random.randint(1, settings.MAX_ALPHABETIC_INDIVIDUAL_INIT_LENGTH)
 			for i in range(length):
-				self.sequence += random.choose(settings.ALPHABET)
+				self.sequence += random.choice(settings.ALPHABET)
 
 	def __str__(self):
 		return '"%s"' % self.sequence
@@ -57,7 +58,7 @@ class AlphabeticEncoding(Encoding):
 		return len(self.sequence)
 
 	# metodi di mutazione
-    def mutate_single_char(self, char = None):
+	def mutate_single_char(self, char = None):
 		"""
 		substitute a single position with char
 		if char is submitted a random char is chosen
@@ -74,7 +75,7 @@ class AlphabeticEncoding(Encoding):
 		for char in self.sequence:
 			if chance(probe):
 				new_sequence += random.choice(settings.ALPHABET)
-			else
+			else:
 				new_sequence += char
 		self.sequence = new_sequence
 

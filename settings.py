@@ -1,8 +1,11 @@
+import library
+
 MUTATION_PROBABILITY = 0.01
 REPRODUCTION_RATE = 0.2
 POPULATION_SIZE = 1000
 ENCODING_TYPE = library.AlphabeticEncoding
-FITNESS_TYPE = library.WinPlayedFitness
+FITNESS_TYPE = library.WonPlayedFitness
+
 
 # Alphabetic settings
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
