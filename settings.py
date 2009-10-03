@@ -6,6 +6,7 @@ POPULATION_SIZE = 1000
 ENCODING_TYPE = library.AlphabeticEncoding
 FITNESS_TYPE = library.WonPlayedFitness
 MATCH_FUNCTION = library.console_match
+CHOOSE_INDIVIDUAL_BY_FITNESS = library.choose_with_probability
 
 # Alphabetic settings
 ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ "
