@@ -65,7 +65,7 @@ class Population(object):
         return sum(map(lambda i: i.get_fitness(), self.pool))
     
     def sort(self):
-        self.pool.sort()
+        self.pool.reverse()
 
     def prune(self):
         # TODO Questo metodo dovrebbe essere esguito dopo ogni match
@@ -82,6 +82,10 @@ class Population(object):
     def __iter__(self):
         for i in self.pool:
             yield i
+
+    def __str__(self):
+        for i in self.pool:
+            print "%s, %f" % (i, i.get_fitness())
 
 class Evolve(object):
     def __init__(self):
@@ -108,6 +112,7 @@ class Evolve(object):
             try:
                 self.match()
             except StopEvolving:
+                print self.population
                 break
             if chance(settings.REPRODUCTION_RATE):
                 individuals = self.population.choose_random_couple(by_fitness = True)

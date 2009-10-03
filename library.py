@@ -1,6 +1,8 @@
 import settings
 import random
 import genoken
+import urllib
+import re
 
 class Encoding():
     """
@@ -126,8 +128,8 @@ class AlphabeticEncoding(Encoding):
 
 class WonPlayedFitness(Fitness):
     def __init__(self):
-        self.won = 0.0
-        self.played = 0.0
+        self.won = 0
+        self.played = 0
     
     def __float__(self):
         return (float(self.won) / float(self.played)) + 1 if self.played != 0 else 0.0
@@ -182,3 +184,21 @@ def console_match(couple):
             raise genoken.StopEvolving
     except IndexError:
         pass
+
+def google_match(couple):
+    r0 = google_results(str(couple[0]))
+    r1 = google_results(str(couple[1]))
+    print couple,
+    if r0 > r1:
+        print "wins", couple[0]
+        return (couple[0], couple[1])
+    else:
+        print "wins", couple[1]
+        return (couple[1], couple[0])
+
+def google_results(str):
+    response = urllib.urlopen("http://www.goolge.com/complete/search?q=" + str)
+    results = re.findall("(\d{1,3}(?:,\d{3})*) results", response.read())
+    results = map(lambda x: int("".join(x.split(","))), results)
+    return sum(results)
+
